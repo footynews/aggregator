@@ -8,6 +8,9 @@ from bs4 import BeautifulSoup
 Article = collections.namedtuple('Article', ['source', 'title', 'url', 'author',
                                              'date_published'])
 
+InvalidArticle = collections.namedtuple('InvalidArticle', ['source', 'url',
+                                                           'exception'])
+
 
 def make_soup(url):
     response = requests.get(url)
@@ -29,19 +32,19 @@ class Aggregator(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def crawl(self, *args, **kwargs):
+    def crawl(self, url):
         pass
 
     @abstractmethod
-    def get_author(self, *args, **kwargs):
+    def get_author(self, *tags):
         pass
 
     @abstractmethod
-    def get_date_published(self, *args, **kwargs):
+    def get_date_published(self, *tags):
         pass
 
     @abstractmethod
-    def get_title(self, *args, **kwargs):
+    def get_title(self, *tags):
         pass
 
     
