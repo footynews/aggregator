@@ -27,24 +27,4 @@ class Aggregator(metaclass=ABCMeta):
     def extract(self):
         pass
 
-    @abstractmethod
-    def generate_url(self):
-        pass
-
-    @abstractmethod
-    def crawl(self, url):
-        pass
-
-    @abstractmethod
-    def get_author(self, soup):
-        pass
-
-    @abstractmethod
-    def get_date_published(self, soup):
-        pass
-
-    @abstractmethod
-    def get_title(self, soup):
-        pass
-
     
