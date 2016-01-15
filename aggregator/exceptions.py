@@ -10,3 +10,6 @@ class DatePublishedNotFoundException(WebCrawlException):
 
 class TitleNotFoundException(WebCrawlException):
 	pass
+
+class UrlNotFoundException(WebCrawlException):
+	pass
