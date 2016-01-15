@@ -1,7 +1,5 @@
 import datetime
 
-from urllib.parse import urlparse
-
 from aggregator import exceptions
 from aggregator.base import Aggregator, Article, InvalidArticle, make_soup
 from aggregator.utils.calendar import code_to_month
@@ -19,40 +17,50 @@ class FourFourTwo(Aggregator):
         articles = (self.crawl(div) for div in divs)
         return list(articles)
 
-    def crawl(self, soup):
+    def crawl(self, tag):
         try:
-            title, url = self.get_title_and_url(soup)
-            date_published = self.get_date_published(soup)
+            anchor = tag.find('div', {'class': 'title'}).find('a')
+            url = self.get_url(anchor)
+            title = self.get_title(anchor)
+            date_published = self.get_date_published(tag)
             author = self.get_author(make_soup(url))
             return Article(FourFourTwo.source, title, url, author, date_published)
-        except exceptions.WebCrawlException as e:
-            return InvalidArticle(FourFourTwo.source, url, e)
+        except (exceptions.WebCrawlException, AttributeError) as e:
+            return InvalidArticle(FourFourTwo.source, e)
 
-    def get_author(self, soup):
-        author = soup.find('p', {'class': 'authorName'})
-        if author and author.text:
+    def get_author(self, tag):
+        try:
+            author = tag.find('p', {'class': 'authorName'})
             return author.text.strip()
-        raise exceptions.AuthorNotFoundException
+        except AttributeError as e:
+            raise exceptions.AuthorNotFoundException
+        
 
-    def get_date_published(self, soup):
-        date_published = soup.find('div', {'class': 'created'})
-        if date_published and date_published.text:
+    def get_date_published(self, tag):
+        try:
+            date_published = tag.find('div', {'class': 'created'})
             date_published = date_published.text.strip().split()
             date_published[1] = code_to_month[date_published[1][:3].lower()]
             date_published.reverse()
             date_published = datetime.datetime(*map(int, date_published)).date()
             return date_published
-        raise exceptions.DatePublishedNotFoundException
+        except (IndexError, AttributeError, ValueError):
+            raise exceptions.DatePublishedNotFoundException
 
-    def get_title_and_url(self, soup):
-        a_href = soup.find('div', {'class': 'title'}).find('a')
-        if a_href and a_href.text:
-            title = a_href.text
-            url = a_href['href']
+    def get_title(self, tag):
+        try:
+            return tag.text.strip()
+        except AttributeError as e:
+            raise exceptions.TitleNotFoundException
+
+    def get_url(self, tag):
+        try:
+            url = tag['href']
             url = url.split('/')[-1]
             url = FourFourTwo.base_url + '/' + url
-            return title, url
-        raise exceptions.TitleNotFoundException
+            return url
+        except (KeyError, IndexError, AttributeError, ValueError, TypeError):
+            raise exceptions.UrlNotFoundException
 
 if __name__ == '__main__':
     fourfourtwo = FourFourTwo()
