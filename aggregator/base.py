@@ -36,15 +36,15 @@ class Aggregator(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_author(self, *tags):
+    def get_author(self, soup):
         pass
 
     @abstractmethod
-    def get_date_published(self, *tags):
+    def get_date_published(self, soup):
         pass
 
     @abstractmethod
-    def get_title(self, *tags):
+    def get_title(self, soup):
         pass
 
     

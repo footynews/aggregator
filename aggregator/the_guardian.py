@@ -20,18 +20,6 @@ class TheGuardian(Aggregator):
         articles = (self.crawl(href) for href in valid_hrefs)
         return list(articles)
 
-    def extract2(self):
-        'For local dev testing'
-        with open('/Users/ue/Desktop/logs.html') as f:
-            from bs4 import BeautifulSoup
-            soup = BeautifulSoup(f.read(), 'html.parser')
-            div = soup.find('div', {'class': 'content__meta-container'})
-            try:
-                author = self.get_author(div, 'a', {'rel': 'author'})
-                print(author)
-            except exceptions.WebCrawlException as e:
-                return e, e.args,TheGuardian.source
-
     def _extract_valid_href(self, divs):
         for div in divs:
             href = div.find('a')['href']
@@ -41,35 +29,34 @@ class TheGuardian(Aggregator):
     def crawl(self, url):
         try:
             soup = make_soup(url)
-            title = self.get_title(soup, 'h1', {'class': 'content__headline'})
+            title = self.get_title(soup)
             div = soup.find('div', {'class': 'content__meta-container'})
-            author = self.get_author(div, 'a', {'rel': 'author'})
-            date_published = self.get_date_published(div, 'p',
-                                                     {'class': 'content__dateline'})
+            author = self.get_author(div)
+            date_published = self.get_date_published(div)
             return Article(TheGuardian.source, title, url, author, date_published)
         except exceptions.WebCrawlException as e:
             return InvalidArticle(TheGuardian.source, url, e)
 
-    def get_author(self, soup, *tag):
-        author = soup.find(*tag)
+    def get_author(self, soup):
+        author = soup.find('a', {'rel': 'author'})
         if author and author.text:
             return author.text.strip()
         raise exceptions.AuthorNotFoundException
 
-    def get_date_published(self, soup, *tag):
+    def get_date_published(self, soup):
         try:
-            date_published = soup.find(*tag)
+            date_published = soup.find('p', {'class': 'content__dateline'})
             date_published = date_published.findChildren()[0].text
             _, *date_published, _, _ = date_published.split()
             date_published[1] = code_to_month[date_published[1][:3].lower()]
             date_published.reverse()
             date_published = datetime.datetime(*map(int, date_published)).date()
             return date_published
-        except (IndexError, AttributeError):
+        except (IndexError, AttributeError, ValueError):
             raise exceptions.DatePublishedNotFoundException
 
-    def get_title(self, soup, *tag):
-        title = soup.find(*tag)
+    def get_title(self, soup):
+        title = soup.find('h1', {'class': 'content__headline'})
         if title and title.text:
             return title.text.strip()
         raise exceptions.TitleNotFoundException
