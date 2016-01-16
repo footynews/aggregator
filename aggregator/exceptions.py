@@ -1,15 +1,15 @@
 
 class WebCrawlException(Exception):
-	pass
+    pass
 
 class AuthorNotFoundException(WebCrawlException):
-	pass
+    pass
 
 class DatePublishedNotFoundException(WebCrawlException):
-	pass
+    pass
 
 class TitleNotFoundException(WebCrawlException):
-	pass
+    pass
 
 class UrlNotFoundException(WebCrawlException):
-	pass
+    pass
