@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 
-__title__ = 'footynews-aggregator'
+__title__ = 'footynews'
 __author__ = 'Usman Ehtesham Gul'
 __email__ = 'uehtesham90@gmail.com'
 __license__ = 'Apache v2.0'
 __version__ = '0.0.1'
-__url__ = 'https://github.com/footynews/aggregator.git'
+__url__ = 'https://github.com/footynews/fn_backend'
 
 with open('requirements.txt') as f:
     requires = f.read().splitlines()
