@@ -4,7 +4,7 @@ from abc import ABCMeta, abstractmethod
 import requests
 from bs4 import BeautifulSoup
 
-from aggregator import exceptions
+from footynews.aggregator import exceptions
 
 
 Article = collections.namedtuple('Article', ['source', 'title', 'url', 'author',

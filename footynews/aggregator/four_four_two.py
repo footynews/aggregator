@@ -1,8 +1,8 @@
 import datetime
 
-from aggregator import exceptions
-from aggregator.base import Aggregator, Article, InvalidArticle, make_soup
-from aggregator.utils.calendar import code_to_month
+from footynews.aggregator import exceptions
+from footynews.aggregator.base import Aggregator, Article, InvalidArticle, make_soup
+from footynews.aggregator.utils.calendar import code_to_month
 
 
 class FourFourTwo(Aggregator):
