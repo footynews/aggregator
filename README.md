@@ -1,2 +1,2 @@
-# aggregator
-Aggregate football articles from various sources
+# footynews Backend
+Backend for footynews aggregator and recommender
