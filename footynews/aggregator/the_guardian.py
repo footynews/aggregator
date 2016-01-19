@@ -3,7 +3,8 @@ import datetime
 from urllib.parse import urlparse
 
 from footynews.aggregator import exceptions
-from footynews.aggregator.base import Aggregator, Article, InvalidArticle, make_soup
+from footynews.aggregator.base import (Aggregator, Article, InvalidArticle,
+                                       make_soup
 from footynews.aggregator.utils.calendar import month_to_code, code_to_month
 
 
@@ -35,7 +36,8 @@ class TheGuardian(Aggregator):
                 return Article(TheGuardian.source, title, url, author,
                                date_published)
         except exceptions.WebCrawlException as e:
-            return InvalidArticle(TheGuardian.source, e)
+            return InvalidArticle(ESPNFC.source, e.__class__.__name__,
+                                  e.message, str(e.tag))
 
     def get_date_published(self, tag):
         # Given structure of HTML pages is w.r.t. date and since we only web
@@ -55,8 +57,8 @@ class TheGuardian(Aggregator):
         try:
             url = tag['href']
             return url #if self._is_valid_article(url) else None
-        except (KeyError, TypeError):
-            raise exceptions.UrlNotFoundException
+        except (KeyError, TypeError) as e:
+            raise exceptions.UrlNotFoundException(e, tag)
 
     def _generate_url(self):
         current_date = self._current_date()

@@ -10,7 +10,8 @@ from footynews.aggregator import exceptions
 Article = collections.namedtuple('Article', ['source', 'title', 'url', 'author',
                                              'date_published'])
 
-InvalidArticle = collections.namedtuple('InvalidArticle', ['source', 'exception'])
+InvalidArticle = collections.namedtuple('InvalidArticle', ['source', 'exception',
+                                        'message', 'tag'])
 
 
 def make_soup(url):
@@ -28,6 +29,7 @@ class Aggregator(metaclass=ABCMeta):
     def __init__(self):
         self.articles = None
 
+    @abstractmethod
     def extract(self):
         return list(article for article in self.articles if article is not None)
 
@@ -58,4 +60,4 @@ class Aggregator(metaclass=ABCMeta):
         try:
             return tag.text.strip()
         except AttributeError as e:
-            raise exception
+            raise exception(e, tag)

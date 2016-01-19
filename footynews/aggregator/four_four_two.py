@@ -1,7 +1,8 @@
 import datetime
 
 from footynews.aggregator import exceptions
-from footynews.aggregator.base import Aggregator, Article, InvalidArticle, make_soup
+from footynews.aggregator.base import (Aggregator, Article, InvalidArticle,
+                                       make_soup)
 from footynews.aggregator.utils.calendar import code_to_month
 
 
@@ -32,7 +33,8 @@ class FourFourTwo(Aggregator):
                 return Article(FourFourTwo.source, title, url, author,
                                date_published)
         except (exceptions.WebCrawlException, AttributeError) as e:
-            return InvalidArticle(FourFourTwo.source, e)
+            return InvalidArticle(ESPNFC.source, e.__class__.__name__,
+                                  e.message, str(e.tag))
 
     def get_date_published(self, tag):
         try:
@@ -42,7 +44,7 @@ class FourFourTwo(Aggregator):
             date_published = datetime.datetime(*map(int, date_published)).date()
             return date_published
         except (IndexError, AttributeError, ValueError):
-            raise exceptions.DatePublishedNotFoundException
+            raise exceptions.DatePublishedNotFoundException(e, tag)
 
     def get_url(self, tag):
         try:
@@ -51,7 +53,7 @@ class FourFourTwo(Aggregator):
             url = FourFourTwo.base_url + '/' + url
             return url
         except (KeyError, IndexError, AttributeError, ValueError, TypeError):
-            raise exceptions.UrlNotFoundException
+            raise exceptions.UrlNotFoundException(e, tag)
 
 if __name__ == '__main__':
     fourfourtwo = FourFourTwo()

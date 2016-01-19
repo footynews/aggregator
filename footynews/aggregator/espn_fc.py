@@ -1,7 +1,8 @@
 import datetime
 
 from footynews.aggregator import exceptions
-from footynews.aggregator.base import Aggregator, Article, InvalidArticle, make_soup
+from footynews.aggregator.base import (Aggregator, Article, InvalidArticle,
+                                       make_soup)
 
 
 class ESPNFC(Aggregator):
@@ -30,7 +31,8 @@ class ESPNFC(Aggregator):
                 return Article(ESPNFC.source, title, url, author,
                                date_published)
         except exceptions.WebCrawlException as e:
-            return InvalidArticle(ESPNFC.source, e)
+            return InvalidArticle(ESPNFC.source, e.__class__.__name__,
+                                  e.message, str(e.tag))
 
     def get_date_published(self, tag):
         try:
@@ -39,15 +41,15 @@ class ESPNFC(Aggregator):
                                                         '%Y-%m-%d').date()
             return date_published
         except (IndexError, AttributeError, ValueError, TypeError):
-            raise exceptions.DatePublishedNotFoundException
+            raise exceptions.DatePublishedNotFoundException(e, tag)
 
     def get_url(self, tag):
         try:
             url = tag['href']
             url = url.replace('.us', '.com')
             return url
-        except (KeyError, AttributeError, TypeError):
-            raise exceptions.UrlNotFoundException
+        except (KeyError, AttributeError, TypeError) as e:
+            raise exceptions.UrlNotFoundException(e, tag)
 
 
 if __name__ == '__main__':
