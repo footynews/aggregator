@@ -33,7 +33,7 @@ class FourFourTwo(Aggregator):
                 return Article(FourFourTwo.source, title, url, author,
                                date_published)
         except (exceptions.WebCrawlException, AttributeError) as e:
-            return InvalidArticle(ESPNFC.source, e.__class__.__name__,
+            return InvalidArticle(FourFourTwo.source, e.__class__.__name__,
                                   e.message, str(e.tag))
 
     def get_date_published(self, tag):
