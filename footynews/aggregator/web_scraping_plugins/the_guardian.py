@@ -74,6 +74,9 @@ class TheGuardian(Aggregator):
         path = set(path.split('/')[:-1])
         return 'blog' in path or 'who-scored-blog' in path
 
+def setup():
+    return TheGuardian()
+
 
 if __name__ == '__main__':
     the_guardian = TheGuardian()

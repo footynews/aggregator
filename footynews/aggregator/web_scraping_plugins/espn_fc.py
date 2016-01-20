@@ -52,6 +52,10 @@ class ESPNFC(Aggregator):
             raise exceptions.UrlNotFoundException(e, tag)
 
 
+def setup():
+    return ESPNFC()
+
+
 if __name__ == '__main__':
     espn_fc = ESPNFC()
     print(espn_fc.extract())

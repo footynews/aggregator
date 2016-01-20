@@ -55,6 +55,11 @@ class FourFourTwo(Aggregator):
         except (KeyError, IndexError, AttributeError, ValueError, TypeError):
             raise exceptions.UrlNotFoundException(e, tag)
 
+
+def setup():
+    return FourFourTwo()
+
+
 if __name__ == '__main__':
     fourfourtwo = FourFourTwo()
     print(fourfourtwo.extract())
