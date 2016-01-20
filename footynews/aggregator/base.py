@@ -31,7 +31,7 @@ class Aggregator(metaclass=ABCMeta):
 
     @abstractmethod
     def extract(self):
-        return list(article for article in self.articles if article is not None)
+        return (article for article in self.articles if article is not None)
 
     @abstractmethod
     def crawl(self, tag):
