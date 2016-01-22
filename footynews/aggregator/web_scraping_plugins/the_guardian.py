@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 from footynews.aggregator import exceptions
 from footynews.aggregator.base import (Aggregator, Article, InvalidArticle,
                                        make_soup)
-from footynews.aggregator.utils.calendar import month_to_code, code_to_month
+from footynews.aggregator.utils import month_to_code, code_to_month
 
 
 class TheGuardian(Aggregator):

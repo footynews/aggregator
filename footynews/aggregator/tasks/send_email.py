@@ -10,7 +10,7 @@ class Email:
 
     def __init__(self, from_addr, to_addr, subject, body_template_text,
                  body_template_html, render_context,attachments=None,
-                 from_name=None, template_loader='templates'):
+                 from_name=None):
         self.from_addr = from_addr
         self.to_addr = to_addr
         self.subject = subject
@@ -22,7 +22,7 @@ class Email:
         self.from_name = from_name
         self.body_template_text = body_template_text
         self.body_template_html = body_template_html
-        self.env = Environment(loader=FileSystemLoader(template_loader))
+        self.env = Environment(loader=FileSystemLoader('templates'))
         self.render_context = render_context
         self.message = None
 
@@ -76,7 +76,7 @@ class Email:
 
 def send_email(from_addr, password, to_addr, subject, body_template_text,
                body_template_html, render_context,attachments=None,
-               from_name=None, template_loader='templates'):
+               from_name=None):
     with smtplib.SMTP('smtplib.gmail.com', 587) as server:
         server.starttls()
         server.login(from_addr, password)
