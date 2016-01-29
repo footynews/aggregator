@@ -1,3 +1,4 @@
 beautifulsoup4==4.4.1
 pluginbase==0.3
 requests==2.9.1
+SQLAlchemy==1.0.11
