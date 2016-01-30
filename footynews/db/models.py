@@ -24,7 +24,9 @@ class Article(Base):
         self.date_published = article.date_published
 
     def __repr__(self):
-        return "<Article(source={0})>"
+        return ("<Article(source={0}, title={1}, url={2}, author={3}, "
+                "date_published={4})>".format(self.source, self.title,
+                self.url, self.author, self.date_published))
 
 engine = create_engine('')
 Base.metadata.create_all(engine)
