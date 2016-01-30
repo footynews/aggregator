@@ -25,3 +25,12 @@ def generate_stats(articles):
         for value in values:
             stats['by_source'][key][value.__class__.__name__.lower()] += 1
     return stats
+
+def generate_report(invalid_articles, current_date):
+    report_name = ('footynews_invalid_articles_daily_report_{0}'
+                   .format(current_date))
+    with open(report_name, 'w') as f:
+        writer = csv.writer(f)
+        for invalid_article in invalid_articles:
+            writer.writerow(invalid_article)
+    return report_name
