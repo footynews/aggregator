@@ -19,11 +19,11 @@ class DailyReport:
         self.stats['total'] += 1
         if isinstance(article, Article):
             self.stats['valid_articles'] += 1
-            sef.stats['valid_{0}'.format(
+            self.stats['valid_{0}'.format(
                 article.source.lower().replace(' ', '_'))] += 1
         elif isinstance(article, InvalidArticle):
             self.stats['invalid_articles'] += 1
-            sef.stats['invalid_{0}'.format(
+            self.stats['invalid_{0}'.format(
                 article.source.lower().replace(' ', '_'))] += 1
 
     def update_report(self, article):

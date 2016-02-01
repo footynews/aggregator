@@ -6,10 +6,9 @@ from itertools import groupby
 from pluginbase import PluginBase
 
 from footynews.aggregator.base import Article, InvalidArticle
-from footynews.aggregator.tasks.send_email import send_email
 from footynews.aggregator.utils import generate_stats
 from footynews.daily_report import DailyReport
-from footynews.db.models import db_session
+from footynews.db.models import Articles, db_session
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -26,12 +25,12 @@ def main():
             #articles.extend(list(getattr(source, 'extract')()))
             for article in getattr(source, 'extract')():
                 if isinstance(article, Article):
-                    # store in database
-                    pass
+                    db_session.add(Articles(article))
+                    db_session.commit()
                 elif isinstance(article, InvalidArticle):
                     daily_report.update_report(article)
                 daily_report.update_stats(article)
-    if datetime.datetime.now.hour == 23:
+    if datetime.datetime.now().hour == 23:
         daily_report.email_report()
         daily_report.reset()
 

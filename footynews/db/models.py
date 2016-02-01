@@ -1,3 +1,5 @@
+import os
+
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -5,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base()
 
-class Article(Base):
+class Articles(Base):
     """Model for Articles"""
     __tablename__ = 'articles'
 
@@ -28,7 +30,7 @@ class Article(Base):
                 "date_published={4})>".format(self.source, self.title,
                 self.url, self.author, self.date_published))
 
-engine = create_engine('')
+engine = create_engine(os.environ['FOOTYNEWS_DB_URI'])
 Base.metadata.create_all(engine)
 DBSession = sessionmaker(bind=engine)
 db_session = DBSession()
