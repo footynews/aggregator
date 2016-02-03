@@ -14,7 +14,7 @@ class Articles(Base):
     _id = Column(Integer, primary_key=True)
     source = Column(String)
     title = Column(String)
-    url = Column(String)
+    url = Column(String, unique=True)
     author = Column(String)
     date_published = Column(DateTime)
 

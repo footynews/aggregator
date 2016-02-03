@@ -4,6 +4,7 @@ import smtplib
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from jinja2 import Environment, FileSystemLoader, Template
 
 
 class Email:
@@ -16,7 +17,7 @@ class Email:
         self.subject = subject
         if attachments is None:
             attachments = []
-        elif not isinstance(attachments, str):
+        elif isinstance(attachments, str):
             attachments = [attachments]
         self.attachments = attachments
         self.from_name = from_name
@@ -77,13 +78,10 @@ class Email:
 def send_email(from_addr, password, to_addr, subject, body_template_text,
                body_template_html, render_context,attachments=None,
                from_name=None):
-    with smtplib.SMTP('smtplib.gmail.com', 587) as server:
+    with smtplib.SMTP('smtp.gmail.com', 587) as server:
         server.starttls()
         server.login(from_addr, password)
-        if isinstance(to_addr, str):
-            to_addr = [to_addr]
-            for to in to_addr:
-                email = Email(from_addr, to, subject, body_template_text,
-                              body_template_html, render_context, attachments)
-                composed_email = email.compose_email()
-                server.sendmail(from_addr, to_addr, composed_email.as_string())
+        email = Email(from_addr, to_addr, subject, body_template_text,
+                      body_template_html, render_context, attachments)
+        composed_email = email.compose_email()
+        server.sendmail(from_addr, to_addr, composed_email.as_string())

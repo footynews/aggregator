@@ -1,5 +1,7 @@
+Jinja2==2.8
+MarkupSafe==0.23
+SQLAlchemy==1.0.11
 beautifulsoup4==4.4.1
-pluginbase==0.3
+-e git+https://github.com/ueg1990/pluginbase.git@817b5b459e08c7c711342688ae190eebffe6db01#egg=pluginbase-master
 psycopg2==2.6.1
 requests==2.9.1
-SQLAlchemy==1.0.11

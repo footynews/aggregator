@@ -6,7 +6,6 @@ from itertools import groupby
 from pluginbase import PluginBase
 
 from footynews.aggregator.base import Article, InvalidArticle
-from footynews.aggregator.utils import generate_stats
 from footynews.daily_report import DailyReport
 from footynews.db.models import Articles, db_session
 
@@ -22,7 +21,6 @@ def main():
     articles = []
     for plugin in plugin_source.list_plugins():
             source = plugin_source.load_plugin(plugin).setup()
-            #articles.extend(list(getattr(source, 'extract')()))
             for article in getattr(source, 'extract')():
                 if isinstance(article, Article):
                     db_session.add(Articles(article))

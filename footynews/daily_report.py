@@ -1,12 +1,13 @@
+import csv
 import os
 from collections import defaultdict
 
 from footynews.aggregator.base import Article, InvalidArticle
 from footynews.send_email import send_email
 
-body_template_text = ''
+body_template_text = 'daily_report_text.j2'
 
-body_template_html = ''
+body_template_html = 'daily_report_html.j2'
 
 class DailyReport:
 
@@ -30,16 +31,16 @@ class DailyReport:
         self.invalid_articles.append(article)
 
     def generate_report(self):
-        report_name = ('footynews_invalid_articles_daily_report_{0}'
+        report_name = ('footynews_invalid_articles_daily_report_{0}.csv'
                        .format(self.current_date))
         report_path = os.path.join('/tmp', report_name)
         with open(report_path, 'w') as f:
             writer = csv.writer(f)
-            write.writerow(['Source', 'Exception', 'Message', 'Tag'])
+            writer.writerow(['Source', 'Exception', 'Message', 'Tag'])
             writer.writerows(self.invalid_articles)
         return report_path
 
-    def reset():
+    def reset(self):
         self.stats = {}
         self.invalid_articles = []
 
@@ -50,7 +51,7 @@ class DailyReport:
         subject = 'FootyNews Web Scraping Report {0}'.format(self.current_date)
         report_path = self.generate_report()
         send_email(from_addr, password, to_addr, subject, body_template_text,
-                   body_template_html, self.stats, report_name)
+                   body_template_html, self.stats, report_path)
         self.delete_report(report_path)
 
     def delete_report(self, report_path):
