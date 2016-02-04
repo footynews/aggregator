@@ -11,7 +11,7 @@ Article = collections.namedtuple('Article', ['source', 'title', 'url', 'author',
                                              'date_published'])
 
 InvalidArticle = collections.namedtuple('InvalidArticle', ['source', 'exception',
-                                        'message', 'tag'])
+                                        'message', 'url', 'tag'])
 
 
 def make_soup(url):

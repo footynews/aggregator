@@ -3,6 +3,7 @@ import os
 from collections import defaultdict
 from itertools import groupby
 
+import sqlalchemy.exc
 from pluginbase import PluginBase
 
 from footynews.aggregator.base import Article, InvalidArticle
@@ -23,11 +24,18 @@ def main():
             source = plugin_source.load_plugin(plugin).setup()
             for article in getattr(source, 'extract')():
                 if isinstance(article, Article):
-                    db_session.add(Articles(article))
-                    db_session.commit()
+                    try:
+                        db_session.add(Articles(article))
+                        db_session.commit()
+                    except sqlalchemy.exc.IntegrityError as  e:
+                        if ('duplicate key value violates unique constraint'
+                            in e.orig):
+                            print("{0} already exists".format(article.url))
+                            db_session.rollback()
                 elif isinstance(article, InvalidArticle):
                     daily_report.update_report(article)
                 daily_report.update_stats(article)
+    print(daily_report.stats)
     if datetime.datetime.now().hour == 23:
         daily_report.email_report()
         daily_report.reset()

@@ -19,6 +19,7 @@ class ESPNFC(Aggregator):
         return super().extract()
 
     def crawl(self, tag):
+        url = None
         try:
             anchor = tag.find('a', {'class': 'common-link'})
             url = self.get_url(anchor)
@@ -32,7 +33,7 @@ class ESPNFC(Aggregator):
                                date_published)
         except exceptions.WebCrawlException as e:
             return InvalidArticle(ESPNFC.source, e.__class__.__name__,
-                                  e.message, str(e.tag))
+                                  e.message, url, str(e.tag))
 
     def get_date_published(self, tag):
         try:

@@ -21,6 +21,7 @@ class FourFourTwo(Aggregator):
         return super().extract()
 
     def crawl(self, tag):
+        url = None
         try:
             anchor = tag.find('div', {'class': 'title'}).find('a')
             url = self.get_url(anchor)
@@ -34,7 +35,7 @@ class FourFourTwo(Aggregator):
                                date_published)
         except (exceptions.WebCrawlException, AttributeError) as e:
             return InvalidArticle(FourFourTwo.source, e.__class__.__name__,
-                                  e.message, str(e.tag))
+                                  e.message, url, str(e.tag))
 
     def get_date_published(self, tag):
         try:

@@ -21,6 +21,7 @@ class TheGuardian(Aggregator):
         return super().extract()
 
     def crawl(self, tag):
+        url = None
         try:
             anchor = tag.find('a')
             url = self.get_url(anchor)
@@ -37,7 +38,7 @@ class TheGuardian(Aggregator):
                                date_published)
         except exceptions.WebCrawlException as e:
             return InvalidArticle(TheGuardian.source, e.__class__.__name__,
-                                  e.message, str(e.tag))
+                                  e.message, url, str(e.tag))
 
     def get_date_published(self, tag):
         # Given structure of HTML pages is w.r.t. date and since we only web

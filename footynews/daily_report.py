@@ -36,7 +36,7 @@ class DailyReport:
         report_path = os.path.join('/tmp', report_name)
         with open(report_path, 'w') as f:
             writer = csv.writer(f)
-            writer.writerow(['Source', 'Exception', 'Message', 'Tag'])
+            writer.writerow(['Source', 'Exception', 'Message', 'URL', 'Tag'])
             writer.writerows(self.invalid_articles)
         return report_path
 
