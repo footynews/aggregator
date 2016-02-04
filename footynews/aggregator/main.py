@@ -1,7 +1,5 @@
 import datetime
 import os
-from collections import defaultdict
-from itertools import groupby
 
 import sqlalchemy.exc
 from pluginbase import PluginBase
@@ -16,10 +14,9 @@ plugin_base = PluginBase(package='web_scraping')
 plugin_source = plugin_base.make_plugin_source(searchpath=[os.path.join(here,
                                                'web_scraping_plugins')])
 
-daily_report = DailyReport(datetime.date.today())
 
 def main():
-    articles = []
+    daily_report = DailyReport(datetime.date.today())
     for plugin in plugin_source.list_plugins():
             source = plugin_source.load_plugin(plugin).setup()
             for article in getattr(source, 'extract')():
@@ -29,13 +26,10 @@ def main():
                         db_session.commit()
                     except sqlalchemy.exc.IntegrityError as  e:
                         if ('duplicate key value violates unique constraint'
-                            in e.orig):
-                            print("{0} already exists".format(article.url))
+                            in e.args[0]):
+                            print(" Article url {0} already exists".format(article.url))
                             db_session.rollback()
-                elif isinstance(article, InvalidArticle):
-                    daily_report.update_report(article)
-                daily_report.update_stats(article)
-    print(daily_report.stats)
+                daily_report.update(article)
     if datetime.datetime.now().hour == 23:
         daily_report.email_report()
         daily_report.reset()

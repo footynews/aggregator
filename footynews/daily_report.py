@@ -1,5 +1,6 @@
 import csv
 import os
+import shelve
 from collections import defaultdict
 
 from footynews.aggregator.base import Article, InvalidArticle
@@ -9,26 +10,29 @@ body_template_text = 'daily_report_text.j2'
 
 body_template_html = 'daily_report_html.j2'
 
+shelve_db = '/tmp/daily_report'
+
 class DailyReport:
 
     def __init__(self, current_date):
         self.current_date = current_date
-        self.stats = defaultdict(int)
-        self.invalid_articles = []
 
-    def update_stats(self, article):
-        self.stats['total'] += 1
-        if isinstance(article, Article):
-            self.stats['valid_articles'] += 1
-            self.stats['valid_{0}'.format(
-                article.source.lower().replace(' ', '_'))] += 1
-        elif isinstance(article, InvalidArticle):
-            self.stats['invalid_articles'] += 1
-            self.stats['invalid_{0}'.format(
-                article.source.lower().replace(' ', '_'))] += 1
-
-    def update_report(self, article):
-        self.invalid_articles.append(article)
+    def update(self, article):
+        with shelve.open(shelve_db) as db:
+            stats = db.get('stats', defaultdict(int))
+            stats['total'] += 1
+            if isinstance(article, Article):
+                stats['valid_articles'] += 1
+                stats['valid_{0}'.format(
+                    article.source.lower().replace(' ', '_'))] += 1
+            elif isinstance(article, InvalidArticle):
+                stats['invalid_articles'] += 1
+                stats['invalid_{0}'.format(
+                    article.source.lower().replace(' ', '_'))] += 1
+                invalid_articles = db.get('invalid_articles', [])
+                invalid_articles.append(article)
+                db['invalid_articles'] = invalid_articles
+            db['stats'] = stats
 
     def generate_report(self):
         report_name = ('footynews_invalid_articles_daily_report_{0}.csv'
@@ -41,8 +45,8 @@ class DailyReport:
         return report_path
 
     def reset(self):
-        self.stats = {}
-        self.invalid_articles = []
+        with shelve.open(shelve_db, flag='n'):
+            pass
 
     def email_report(self):
         from_addr = os.environ.get('FOOTYNEWS_ADMIN_EMAIL')
