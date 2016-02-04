@@ -34,14 +34,14 @@ class DailyReport:
                 db['invalid_articles'] = invalid_articles
             db['stats'] = stats
 
-    def generate_report(self):
+    def generate_report(self, invalid_articles):
         report_name = ('footynews_invalid_articles_daily_report_{0}.csv'
                        .format(self.current_date))
         report_path = os.path.join('/tmp', report_name)
         with open(report_path, 'w') as f:
             writer = csv.writer(f)
             writer.writerow(['Source', 'Exception', 'Message', 'URL', 'Tag'])
-            writer.writerows(self.invalid_articles)
+            writer.writerows(invalid_articles)
         return report_path
 
     def reset(self):
@@ -53,10 +53,12 @@ class DailyReport:
         password = os.environ.get('FOOTYNEWS_ADMIN_PASSWORD')
         to_addr = os.environ.get('FOOTYNEWS_ADMIN_EMAIL')
         subject = 'FootyNews Web Scraping Report {0}'.format(self.current_date)
-        report_path = self.generate_report()
-        send_email(from_addr, password, to_addr, subject, body_template_text,
-                   body_template_html, self.stats, report_path)
-        self.delete_report(report_path)
+        with shelve.open(shelve_db) as db:
+            report_path = self.generate_report(db.get('invalid_articles', []))
+            send_email(from_addr, password, to_addr, subject, body_template_text,
+                       body_template_html, db.get('stats', defaultdict(int)),
+                       report_path)
+            self.delete_report(report_path)
 
     def delete_report(self, report_path):
         os.remove(report_path)
